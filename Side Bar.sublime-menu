@@ -1,0 +1,10 @@
+[
+	{ "caption": "-" },
+	{
+		"caption": "WebDav",
+		"children":
+		[
+			{ "caption": "Browse in server", "command": "webdav"}
+		]
+	}
+]
