@@ -37,11 +37,11 @@ class WebdavCommand(sublime_plugin.WindowCommand):
 
 
 	def run(self):
-		self.path = "https://webdav.qa.myconnectedradio.com"
-		self.root = "/tunnel-web/secure/webdav/cadillac/document_library/"
+		self.path = "https://example.com"
+		self.root = "/home/"
 		self.currentPath = self.root
-		self.user = "[ONS]JAIRREINA"
-		self.pasw = "Elinutil1"
+		self.user = "user"
+		self.pasw = "password"
 		self.lista = []
 		self.items = []
 		self.webdavConnection = self.getFolder(self.root)
