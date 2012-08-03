@@ -127,7 +127,6 @@ class Connection(DAV):
         
     def __evaluateResponse(self, method, response):
         """ Evaluates the response of the WebDAV server. """
-        
         status, reason = response.status, response.reason
         self.logger.debug("Method: " + method + " Status %d: " % status + reason)
         

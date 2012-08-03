@@ -17,6 +17,9 @@ class WebdavCommand(sublime_plugin.WindowCommand):
 					self.items.append((resource,properties))
 
 				self.window.show_quick_panel(self.lista,self.callB)
+			else:
+				k = self.items[index][0].downloadContent({"Cookie":self.cookies})
+				print k.read()
 		elif index == 0:
 			#if self.currentPath != self.root:
 			self.lista = []
@@ -37,11 +40,11 @@ class WebdavCommand(sublime_plugin.WindowCommand):
 
 
 	def run(self):
-		self.path = "https://example.com"
-		self.root = "/home/"
+		self.path = "https://webdav.qa.myconnectedradio.com"
+		self.root = "/tunnel-web/secure/webdav/cadillac/document_library/"
 		self.currentPath = self.root
-		self.user = "user"
-		self.pasw = "password"
+		self.user = "[ONS]JAIRREINA"
+		self.pasw = "Elinutil1"
 		self.lista = []
 		self.items = []
 		self.webdavConnection = self.getFolder(self.root)
@@ -52,6 +55,7 @@ class WebdavCommand(sublime_plugin.WindowCommand):
 				self.lista.append(properties.getDisplayName())
 				self.items.append((resource,properties))
 
+			self.cookies = self.items[2][0].getSpecificOption("set-cookie")
 			self.window.show_quick_panel(self.lista,self.callB)
 		except AuthorizationError, e:
 			raise e
