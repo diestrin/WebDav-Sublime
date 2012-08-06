@@ -36,8 +36,7 @@ def getDefaultLogger(handler=None):
     
     @return: Logger instance.
     @rtype: C{logging.Logger}
-    """
-    
+    """    
     myLogger = logging.getLogger(_defaultLoggerName)
     if len(myLogger.handlers) == 0: 
         myLogger.level = logging.DEBUG

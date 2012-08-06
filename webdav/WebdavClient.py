@@ -336,7 +336,7 @@ class ResourceStorer(object):
                 self.connection.logger.debug(response.read())
                 response.close()
 
-    def uploadFile(self, newFile, lockToken=None):
+    def uploadFile(self, newFile, lockToken=None, extra_hdrs={}):
         """
         Write binary data to permanent storage.
         
@@ -350,6 +350,7 @@ class ResourceStorer(object):
         header = {}
         if lockToken:
             header = lockToken.toHeader()
+        header.update(extra_hdrs)
         self.connection.putFile(self.path, newFile, header=header)
 
     def downloadContent(self, extra_hdrs={}):
@@ -360,14 +361,14 @@ class ResourceStorer(object):
         # TODO: Other interface ? return self.connection.getfile()
         return response
 
-    def downloadFile(self, localFileName):
+    def downloadFile(self, localFileName, extra_hdrs={}):
         """
         Copy binary data from permanent storage to a local file.
         
         @param localFileName: file to write binary data to
         """
         localFile = open(localFileName, 'wb')
-        remoteFile = self.downloadContent()
+        remoteFile = self.downloadContent(extra_hdrs)
         _blockCopyFile(remoteFile, localFile, Connection.blockSize)
         remoteFile.close()
         localFile.close()
@@ -692,7 +693,7 @@ class CollectionStorer(ResourceStorer):
         @return: a list of the tuple (resources or collection) / properties)
         @rtype: C{list} 
         """
-        self.validate()
+        #self.validate()
         collectionContents = []
         result = self.listResources()
         for url, properties_ in result.items():

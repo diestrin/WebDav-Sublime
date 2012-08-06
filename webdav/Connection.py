@@ -75,6 +75,7 @@ class Connection(DAV):
         self.isConnectedToCatacomb = True
         self.serverTypeChecked = False
         self._lock = RLock()
+        self.cookie = None
          
     def _request(self, method, url, body=None, extra_hdrs={}):
         
@@ -82,6 +83,9 @@ class Connection(DAV):
         try:
             # add the authorization header
             extraHeaders = copy(extra_hdrs)
+            if self.cookie:
+                extraHeaders.update({"cookie":self.cookie})
+                self.logger.debug("REQUEST Header: ('%s', '%s')" % ("Cookie", str(self.cookie)))
             if self.__authorizationInfo:
 
                 # update (digest) authorization data

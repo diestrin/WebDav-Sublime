@@ -4,7 +4,31 @@
 		"caption": "WebDav",
 		"children":
 		[
-			{ "caption": "Browse in server", "command": "webdav"}
+			{
+				"caption": "Create Config File",
+				"command": "webdavcreate",
+				"args": {
+					"paths": []
+				}
+			},{
+				"caption": "Browse in server",
+				"command": "webdavbrowse",
+				"args": {
+					"paths": []
+				}
+			},{
+				"caption": "Download this item",
+				"command": "webdavdownload",
+				"args": {
+					"paths": []
+				}
+			},{
+				"caption": "Upload this item",
+				"command": "webdavupload",
+				"args": {
+					"paths": []
+				}
+			}
 		]
 	}
 ]

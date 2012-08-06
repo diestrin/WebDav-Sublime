@@ -1,0 +1,1 @@
+chrome.devtools.panels.create("Testing", "icon.png", "patito.html", function(panel){});
