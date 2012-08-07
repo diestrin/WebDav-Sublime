@@ -1,0 +1,1 @@
+chrome.devtools.panels.create("Testing", "icon.png", "casaCasita.html", function(panel){});

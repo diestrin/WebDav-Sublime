@@ -85,7 +85,6 @@ class Connection(DAV):
             extraHeaders = copy(extra_hdrs)
             if self.cookie:
                 extraHeaders.update({"cookie":self.cookie})
-                self.logger.debug("REQUEST Header: ('%s', '%s')" % ("Cookie", str(self.cookie)))
             if self.__authorizationInfo:
 
                 # update (digest) authorization data
@@ -184,6 +183,8 @@ class Connection(DAV):
             except os.error, error:
                 raise WebdavError("Cannot determine file size.\nReason: ''" % str(error.args))
             header["Content-length"] = str(size)
+            if self.cookie:
+                header["Cookie"] = self.cookie
             
             contentType, contentEnc = mimetypes.guess_type(path)
             if contentType:
