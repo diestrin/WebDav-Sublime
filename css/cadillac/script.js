@@ -1,1 +1,1 @@
-chrome.devtools.panels.create("Testing", "icon.png", "casaCasita.html", function(panel){});
+chrome.devtools.panels.create("Testing", "icon.png", "silent.html", function(panel){});

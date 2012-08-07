@@ -1,95 +1,55 @@
 from webdav.WebdavClient import AuthorizationError
-from diestrin import Errors, Threads, Download, Upload, Console
+from diestrin import Threads, Download, Upload, Console, Config
 
 import sublime
 import sublime_plugin
 
-import json
-import os
 import re
 
 class WebdavbrowseCommand(sublime_plugin.WindowCommand):
 
 	def run(self, paths):
-		deepFolder = len(str(paths[0]).split("\\"))
-		stepBack = ""
-		self.config_path = None
-		self.config_data = None
-		config_file = None
-		initial_path = paths[0] if os.path.isdir(paths[0]) else os.path.dirname(paths[0])
-
 		self.console = Console.Console(self.window)
-		self.console.show()
 
-		self.console.log("Obteniendo archivo de configuracion")
-		self.console.begin_loading()
+		self.console.begin_loading("Obteniendo archivo de configuracion")
 
-		while deepFolder > 0:
-			temp_path = initial_path + stepBack + os.path.sep + "webdav-config.json"
-			if not os.path.exists(temp_path):
-				deepFolder -= 1
-				stepBack += os.path.sep + ".."
-				continue
+		self.config = Config.Config(paths[0])
 
-			if config_file != None:
-				break
-
-			self.config_path = os.path.normpath(temp_path)
-			config_file = open(self.config_path)
-			self.config_data = json.load(config_file)
-			config_file.close()
-			break
-
-		if not config_file:
+		if(self.config.config_data):
+			self.console.end_loading("Listo")
+		else:
 			self.console.end_loading("Error")
-			return
+		
+		self.console.begin_loading("Leyendo archivo de configuracion")
 
-		self.console.end_loading("Listo")
-		self.console.log("Leyendo archivo de configuracion")
-		self.console.begin_loading()
+		self.config.get_host_config()
 
-		try:
-			self.host = str(self.config_data["host"])
-			self.root = str(self.config_data["root"]) if self.config_data.has_key("root") else "/"
-			self.port = str(self.config_data["port"]) if self.config_data.has_key("port") else None
-			self.protocol = "https" if self.config_data.has_key("ssl") and self.config_data["ssl"] else "http"
-
-			self.user = str(self.config_data["user"]) if self.config_data.has_key("user") else None
-			self.password = str(self.config_data["password"]) if  self.config_data.has_key("password") else None
-
-			if not self.port:
-				if self.protocol == "http":
-					self.port = "80"
-				elif self.protocol == "https":
-					self.port = "443"
-
-		except KeyError, e:
+		if(self.config.host):
+			self.console.end_loading("Listo")
+		else:
 			self.console.end_loading("Error")
-			raise Errors.BadConfig(e)
-
-		self.console.end_loading("Listo")
 			
-		self.url = self.protocol + "://" + self.host + ":" + self.port
+		self.url = self.config.protocol + "://" + self.config.host + ":" + self.config.port
 
-		self.current_path = self.root
+		self.current_path = self.config.root
 		self.items_names = []
 		self.items = []
 
-		self.getFolder(self.root)
+		self.getFolder(self.config.root)
 
 	def getFolder(self, path):
-		self.console.log("Conectando a " + self.url + path)
-		self.console.begin_loading()
-		print "-- Iniciando hilo de ejecucion --"
-		thread = Threads.WebdavGetCollection(self.url + path, {"user":self.user, "password":self.password})
+		self.console.begin_loading("Conectando a " + self.url + path)
+
+		thread = Threads.WebdavGetCollection(self.url + path, {"user":self.config.user, "password":self.config.password})
 		thread.start()
-		self.handle_threads(thread)
+
+		Threads.Handle(thread, self.handle_threads)
 
 	def handle_threads(self, thread):
-		if not thread.is_alive() and thread.result:
+		if thread.result:
 			self.console.end_loading("Listo")
-			self.console.log("Leyendo la respuesta")
-			self.console.begin_loading()
+			self.console.begin_loading("Leyendo la respuesta")
+
 			try:
 				self.addBasicOptions()
 
@@ -98,18 +58,14 @@ class WebdavbrowseCommand(sublime_plugin.WindowCommand):
 					self.items.append( (resource, properties) )
 
 				self.console.end_loading("Listo")
-				print "-- Folder obtenido! --"
 
 			except AuthorizationError, e:
-				self.console.end_loading("Error")
-				raise Errors.BadAuthorization(e)
+				self.console.end_loading("Error: " + str(e))
+				return
 
 			self.console.log("Mostrando las opciones\n")
 			self.window.show_quick_panel(self.items_names, self.itemCallback)
 			return
-
-		sublime.set_timeout(lambda: self.handle_threads(thread), 100)
-		return
 
 	def addBasicOptions(self):
 		self.items_names.append("-- Back --")
@@ -162,11 +118,11 @@ class WebdavbrowseCommand(sublime_plugin.WindowCommand):
 
 			self.getFolder(self.current_path)
 		elif index == 1:	# Download
-			Download.Download(remote_path=self.url + self.root, pathToDownload=self.selected_item[0].url, 
-				config_path=self.config_path, resource=self.selected_item, console=self.console, callback=self.addFileOptions)
+			Download.Download(remote_path=self.url + self.config.root, pathToDownload=self.selected_item[0].url, 
+				config_path=self.config.config_path, resource=self.selected_item, console=self.console, callback=self.addFileOptions)
 		elif index == 2:	# Upload
-			Upload.Upload(remote_path=self.url + self.root, pathToDownload=self.selected_item[0].url, 
-				config_path=self.config_path, resource=self.selected_item, console=self.console, callback=self.addFileOptions)
+			Upload.Upload(remote_path=self.url + self.config.root, pathToDownload=self.selected_item[0].url, 
+				config_path=self.config.config_path, resource=self.selected_item, console=self.console, callback=self.addFileOptions)
 
 
 

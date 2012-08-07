@@ -1,5 +1,6 @@
 from webdav.WebdavClient import CollectionStorer
 import threading
+import sublime
 
 class WebdavGetCollection(threading.Thread):
 	def __init__(self, url, auth={}):
@@ -28,10 +29,13 @@ class WebdavDownloadFile(threading.Thread):
 		
 	def run(self):
 		try:
+			print "Descargando " + self.local_path
 			self.resource.downloadFile(self.local_path)
+			print "Listo"
 			self.result = "Succes"
-		except:
-			self.result = "Error"
+		except Exception, e:
+			print "Mamo " + str(e)
+			self.result = "Error: " + str(e)
 
 class WebdavUploadFile(threading.Thread):
 	def __init__(self, resource, local_path):
@@ -47,3 +51,17 @@ class WebdavUploadFile(threading.Thread):
 			self.result = "Succes"
 		except:
 			self.result = "Error"
+
+class Handle(object):
+	def __init__(self, thread, success):
+		self.thread = thread
+		self.success = success
+
+		self.__handle()
+
+	def __handle(self):
+		if not self.thread.is_alive():
+			self.success(self.thread)
+			return
+
+		sublime.set_timeout(self.__handle, 100)
