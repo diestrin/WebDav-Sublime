@@ -6,8 +6,8 @@
     "confirm_overwrite_newer": false,
     
     "ssl": true,
-    "host": "test.com",
-    "root": "/path/to/webdav/server",
+    "host": "example.com",
+    "root": "/path/to/webdav/root",
 
     "user": "user",
     "password": "password",
