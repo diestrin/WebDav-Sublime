@@ -5,6 +5,7 @@ class Config(object):
 	def __init__(self, path):
 		self.config_path = None
 		self.config_data = None
+		self.error = None
 
 		initial_path = path if os.path.isdir(path) else os.path.dirname(path)
 		deepFolder = len(str(initial_path).split("\\"))
@@ -49,6 +50,5 @@ class Config(object):
 					self.port = "80"
 				elif self.protocol == "https":
 					self.port = "443"
-
 		except Exception, e:
-			self.console.end_loading("Error: " + str(e))
+			self.error = e
