@@ -1,0 +1,1 @@
+Now you can navigate, download and upload form the side bar, and form the custo nav bar you can download and upload files only.

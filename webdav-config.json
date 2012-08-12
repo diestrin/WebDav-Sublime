@@ -6,11 +6,11 @@
     "confirm_overwrite_newer": false,
     
     "ssl": true,
-    "host": "webdav.qa.myconnectedradio.com",
-    "root": "/tunnel-web/secure/webdav/cadillac/document_library",
+    "host": "test.com",
+    "root": "/path/to/webdav/server",
 
-    "user": "[ONS]JAIRREINA",
-    "password": "Elinutil1",
+    "user": "user",
+    "password": "password",
     
     "ignore_regex": "(\\.sublime-project|\\.sublime-workspace|webdav-config(-alt\\d?)?\\.json|webdav-settings\\.json|/venv/|\\.svn|\\.hg|\\.git|\\.bzr|_darcs|CVS|\\.DS_Store|Thumbs\\.db|desktop\\.ini)",
     "connect_timeout": 30
